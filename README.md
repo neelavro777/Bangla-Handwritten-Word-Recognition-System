@@ -161,12 +161,13 @@ _Access this version in your browser at `http://localhost:8502`._
 
 ## System Architecture & Approach
 
-- **Preprocessing**: Input images from the Mendeley dataset are resized to 32x32 pixels and normalized. The canvas drawing from Streamlit is captured as RGBA, converted to Grayscale, and thresholded.
-- **Segmentation**: OpenCV (`cv2.findContours`) segments the white strokes on the black background. Contours are filtered and sorted left-to-right to form a word sequence.
-- **Model**: A CNN built with PyTorch extracts spatial features using `Conv2d` and `MaxPool2d` layers, followed by `Linear` layers for multi-class classification.
-- **MLflow Tracking**: During training, hyperparameters (epochs, batch_size, img_size) and metrics (accuracy, loss) are tracked. The final model is saved alongside a mapped `labels.json` dictionary. The trained model is logged using MLflow's native PyTorch flavor.
+- **Preprocessing**: Input images from the BanglaLekha-Isolated dataset are resized to 32x32 pixels and normalized. Digital canvas drawings from Streamlit are captured as RGBA, converted to Grayscale, and thresholded. To prevent shape distortion, segmented character ROIs are centered and padded into a square aspect ratio before resizing to 32x32.
+- **Segmentation**: OpenCV (`cv2.findContours` and `cv2.boundingRect`) identifies individual character strokes on the digital canvas background. Contours are filtered by area to remove hand-drawn noise, and sorted left-to-right to reconstruct the chronological word sequence.
+- **Model**: A Convolutional Neural Network (CNN) built in PyTorch extracts spatial features using `Conv2d` and `MaxPool2d` layers, followed by `Linear` dense layers for multi-class classification over the 84 targets.
+- **Unicode Character Mapping**: The predicted numeric folder indexes (1 to 84) are processed through a mapping dictionary to translate the classes into actual Bangla Unicode characters (covering vowels, consonants, numerals, and compound conjuncts) for readable text display in the interface.
+- **MLflow Tracking**: Training hyperparameters (epochs, batch_size, image_dimensions, optimizer, learning_rate, hardware device) and loss/accuracy metrics per batch and epoch are logged. Runs are stored in a persistent SQLite backend database (`sqlite:///mlflow.db`). The trained model is logged using MLflow's native PyTorch model flavor.
 
 ## Limitations & Future Improvements
 
-- **Segmentation Strategy**: The current segmentation uses basic bounding box contouring. This works well for cleanly separated characters but may fail for cursive or overlapping characters. Advanced techniques like CTC (Connectionist Temporal Classification) models would provide more robust sequence recognition without explicit segmentation.
-- **Training Time**: The current implementation restricts image sizes for quicker execution. Deeper architectures like MobileNet or ResNet could improve accuracy at the cost of training time.
+- **Segmentation Strategy**: The current segmentation uses basic bounding box contouring. This works well for cleanly separated, distinct characters but may fail for cursive, connected, or overlapping characters. Advanced sequence-to-sequence models (such as Connectionist Temporal Classification - CTC, or Vision-Language Models) would provide more robust sequence recognition without requiring explicit character-level segmentation.
+- **Model Capacity & Depth**: The current model uses a lightweight CNN to keep latency low. Integrating deeper pre-trained backbones (like ResNet or MobileNet) or utilizing Transformer-based Vision encoders could enhance recognition accuracy on complex handwritten glyphs, albeit requiring more training computation.
