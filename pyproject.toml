@@ -1,0 +1,27 @@
+[project]
+name = "bangla-handwritten-word-recognition-system"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "streamlit==1.38.0",
+    "streamlit-drawable-canvas==0.9.3",
+    "torch",
+    "torchvision",
+    "numpy>=2.1.0",
+    "pandas==2.2.2",
+    "scikit-learn==1.6.1",
+    "Pillow==10.4.0",
+    "mlflow",
+    "opencv-python-headless"
+]
+
+[[tool.uv.index]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cu121"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch" }
+torchvision = { index = "pytorch" }

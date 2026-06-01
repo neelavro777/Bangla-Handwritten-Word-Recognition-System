@@ -1,0 +1,25 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Local dataset (Mendeley/BanglaLekha-Isolated raw images)
+data/
+
+# MLflow tracking
+mlflow.db
+mlruns/
+
+# IDE configurations
+.vscode/
+.idea/
+
+# System specific files
+.DS_Store
+Thumbs.db
